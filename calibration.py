@@ -1,11 +1,11 @@
 import tables
+import numpy as np
 
 data_file_path = "../data/converted/rotation_224_v1/test_file_0.h5"
 
 
 def normalize_and_rgb(images): 
     # Soruce: https://github.com/nhanvtran/MachineLearningNotebooks/blob/nvt/bwcustomweights-validate/project-brainwave/utils.py
-	import numpy as np
     #normalize image to 0-255 per image.
     image_sum = 1/np.sum(np.sum(images,axis=1),axis=-1)
     given_axis = 0
@@ -25,8 +25,8 @@ def normalize_and_rgb(images):
     return images
 
 def read_image(iter):
-	f = tables.open_file(data_file_path, 'r')
-	images = np.array(f.root.img_pt)
-	print("calibration.read_image: got data with shape", images.shape())
-	images = normalize_and_rgb(images)
-	return {"Placeholder": images}
+    with tables.open_file(data_file_path, 'r') as f:
+        images = np.array(f.root.img_pt)[iter:iter+1:1]
+        print("calibration.read_image: got data with shape", images.shape)
+        images = normalize_and_rgb(images)
+    return {"Placeholder": images}
